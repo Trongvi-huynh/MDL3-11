@@ -1,0 +1,27 @@
+import java.util.ArrayList;
+import java.util.Arrays;
+
+import static java.lang.System.out;
+
+public class Main {
+    public static void main(String[] args) {
+        ArrayList<Integer> numbers = new ArrayList<>(
+                Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
+        );
+
+        out.println("Danh sách số nguyên:");
+        numbers.forEach(number -> out.print(number + " "));
+
+        out.println("\n\nCác số chẵn:");
+        numbers.forEach(number -> {
+            if (number % 2 == 0) {
+                out.print(number + " ");
+            }
+        });
+
+        int sum = numbers.stream()
+                .reduce(0, (a, b) -> a + b);
+
+        out.println("\n\nTổng các số: " + sum);
+    }
+}
