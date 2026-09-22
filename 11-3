@@ -1,0 +1,137 @@
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Scanner;
+import java.util.stream.Collectors;
+
+class Message {
+    private String sender;
+    private String content;
+    private LocalDateTime timestamp;
+
+    public Message(String sender, String content, LocalDateTime timestamp) {
+        this.sender = sender;
+        this.content = content;
+        this.timestamp = timestamp;
+    }
+
+    public String getSender() {
+        return sender;
+    }
+
+    public LocalDateTime getTimestamp() {
+        return timestamp;
+    }
+
+    public void display() {
+        System.out.println(
+                "[" + timestamp.format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"))
+                        + "] " + sender + ": " + content
+        );
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        List<Message> messages = new ArrayList<>();
+
+        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+
+        while (true) {
+            System.out.println("\n===== ỨNG DỤNG CHAT =====");
+            System.out.println("1. Gửi tin nhắn");
+            System.out.println("2. Xem lịch sử chat");
+            System.out.println("3. Tìm tin nhắn theo người gửi");
+            System.out.println("4. Tìm tin nhắn theo ngày");
+            System.out.println("5. Thoát");
+            System.out.print("Lựa chọn: ");
+
+            try {
+                int choice = Integer.parseInt(scanner.nextLine());
+
+                switch (choice) {
+                    case 1:
+                        System.out.print("Nhập tên người gửi: ");
+                        String sender = scanner.nextLine();
+
+                        System.out.print("Nhập nội dung tin nhắn: ");
+                        String content = scanner.nextLine();
+
+                        messages.add(
+                                new Message(sender, content, LocalDateTime.now())
+                        );
+
+                        System.out.println("Gửi tin nhắn thành công!");
+                        break;
+
+                    case 2:
+                        if (messages.isEmpty()) {
+                            System.out.println("Chưa có tin nhắn nào!");
+                        } else {
+                            System.out.println("\n===== LỊCH SỬ CHAT =====");
+
+                            messages.forEach(Message::display);
+                        }
+                        break;
+
+                    case 3:
+                        System.out.print("Nhập tên người gửi cần tìm: ");
+                        String searchSender = scanner.nextLine();
+
+                        List<Message> senderMessages = messages.stream()
+                                .filter(message -> message.getSender()
+                                        .equalsIgnoreCase(searchSender))
+                                .collect(Collectors.toList());
+
+                        if (senderMessages.isEmpty()) {
+                            System.out.println("Không tìm thấy tin nhắn!");
+                        } else {
+                            System.out.println("\n===== TIN NHẮN TÌM ĐƯỢC =====");
+                            senderMessages.forEach(Message::display);
+                        }
+                        break;
+
+                    case 4:
+                        System.out.print("Nhập ngày cần tìm (dd/MM/yyyy): ");
+                        String dateInput = scanner.nextLine();
+
+                        LocalDate searchDate = LocalDate.parse(
+                                dateInput,
+                                dateFormatter
+                        );
+
+                        List<Message> dateMessages = messages.stream()
+                                .filter(message -> message.getTimestamp()
+                                        .toLocalDate()
+                                        .equals(searchDate))
+                                .collect(Collectors.toList());
+
+                        if (dateMessages.isEmpty()) {
+                            System.out.println("Không tìm thấy tin nhắn trong ngày này!");
+                        } else {
+                            System.out.println("\n===== TIN NHẮN TRONG NGÀY " + dateInput + " =====");
+                            dateMessages.forEach(Message::display);
+                        }
+                        break;
+
+                    case 5:
+                        System.out.println("Đã thoát chương trình!");
+                        scanner.close();
+                        return;
+
+                    default:
+                        System.out.println("Vui lòng chọn từ 1 đến 5!");
+                }
+
+            } catch (NumberFormatException e) {
+                System.out.println("Vui lòng nhập số hợp lệ!");
+            } catch (DateTimeParseException e) {
+                System.out.println("Định dạng ngày không hợp lệ! Hãy nhập theo dạng dd/MM/yyyy.");
+            }
+        }
+    }
+}
