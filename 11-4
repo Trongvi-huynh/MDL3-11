@@ -1,0 +1,157 @@
+import java.util.HashMap;
+import java.util.Scanner;
+
+class Product {
+    private String id;
+    private String name;
+    private double price;
+
+    public Product(String id, String name, double price) {
+        this.id = id;
+        this.name = name;
+        this.price = price;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public double getPrice() {
+        return price;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setPrice(double price) {
+        this.price = price;
+    }
+
+    public void display() {
+        System.out.println(
+                "ID: " + id +
+                        " | Tên: " + name +
+                        " | Giá: " + price
+        );
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        HashMap<String, Product> products = new HashMap<>();
+
+        while (true) {
+            System.out.println("\n===== QUẢN LÝ SẢN PHẨM =====");
+            System.out.println("1. Thêm sản phẩm");
+            System.out.println("2. Sửa sản phẩm");
+            System.out.println("3. Xóa sản phẩm");
+            System.out.println("4. Hiển thị danh sách sản phẩm");
+            System.out.println("5. Lọc sản phẩm có giá > 100");
+            System.out.println("6. Tính tổng giá trị sản phẩm");
+            System.out.println("7. Thoát");
+            System.out.print("Lựa chọn: ");
+
+            try {
+                int choice = Integer.parseInt(scanner.nextLine());
+
+                switch (choice) {
+                    case 1:
+                        System.out.print("Nhập ID: ");
+                        String id = scanner.nextLine();
+
+                        if (products.containsKey(id)) {
+                            System.out.println("ID sản phẩm đã tồn tại!");
+                            break;
+                        }
+
+                        System.out.print("Nhập tên sản phẩm: ");
+                        String name = scanner.nextLine();
+
+                        System.out.print("Nhập giá: ");
+                        double price = Double.parseDouble(scanner.nextLine());
+
+                        products.put(id, new Product(id, name, price));
+                        System.out.println("Thêm sản phẩm thành công!");
+                        break;
+
+                    case 2:
+                        System.out.print("Nhập ID sản phẩm cần sửa: ");
+                        String updateId = scanner.nextLine();
+
+                        Product product = products.get(updateId);
+
+                        if (product == null) {
+                            System.out.println("Không tìm thấy sản phẩm!");
+                            break;
+                        }
+
+                        System.out.print("Nhập tên mới: ");
+                        String newName = scanner.nextLine();
+
+                        System.out.print("Nhập giá mới: ");
+                        double newPrice = Double.parseDouble(scanner.nextLine());
+
+                        product.setName(newName);
+                        product.setPrice(newPrice);
+
+                        System.out.println("Cập nhật thành công!");
+                        break;
+
+                    case 3:
+                        System.out.print("Nhập ID sản phẩm cần xóa: ");
+                        String deleteId = scanner.nextLine();
+
+                        if (products.remove(deleteId) != null) {
+                            System.out.println("Xóa sản phẩm thành công!");
+                        } else {
+                            System.out.println("Không tìm thấy sản phẩm!");
+                        }
+                        break;
+
+                    case 4:
+                        if (products.isEmpty()) {
+                            System.out.println("Danh sách sản phẩm đang trống!");
+                        } else {
+                            System.out.println("\n===== DANH SÁCH SẢN PHẨM =====");
+
+                            products.values().forEach(Product::display);
+                        }
+                        break;
+
+                    case 5:
+                        System.out.println("\n===== SẢN PHẨM CÓ GIÁ > 100 =====");
+
+                        products.values().stream()
+                                .filter(p -> p.getPrice() > 100)
+                                .forEach(Product::display);
+                        break;
+
+                    case 6:
+                        double total = products.values().stream()
+                                .mapToDouble(Product::getPrice)
+                                .sum();
+
+                        System.out.println("Tổng giá trị sản phẩm: " + total);
+                        break;
+
+                    case 7:
+                        System.out.println("Đã thoát chương trình!");
+                        scanner.close();
+                        return;
+
+                    default:
+                        System.out.println("Vui lòng chọn từ 1 đến 7!");
+                }
+
+            } catch (NumberFormatException e) {
+                System.out.println("Dữ liệu nhập không hợp lệ!");
+            }
+        }
+    }
+}
